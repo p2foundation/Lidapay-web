@@ -29,8 +29,26 @@ import {
 
 export default function RewardsPage() {
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const pointsQ = useQuery({ queryKey: ["points"], queryFn: () => getUserPoints() });
-  const rewardsQ = useQuery({ queryKey: ["rewards"], queryFn: () => getRewards() });
+  const pointsQ = useQuery({ 
+    queryKey: ["points"], 
+    queryFn: () => getUserPoints(),
+    retry: (failureCount, error: any) => {
+      if (error?.status === 401 || error?.status === 404) return false;
+      return failureCount < 2;
+    },
+    retryOnMount: false,
+    refetchOnWindowFocus: false
+  });
+  const rewardsQ = useQuery({ 
+    queryKey: ["rewards"], 
+    queryFn: () => getRewards(),
+    retry: (failureCount, error: any) => {
+      if (error?.status === 401 || error?.status === 404) return false;
+      return failureCount < 2;
+    },
+    retryOnMount: false,
+    refetchOnWindowFocus: false
+  });
 
   const points =
     pointsQ.data?.data?.points ?? pointsQ.data?.points ?? pointsQ.data?.user?.points ?? 0;

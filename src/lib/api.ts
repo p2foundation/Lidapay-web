@@ -166,7 +166,10 @@ async function request<T>(path: string, init?: RequestInit, opts?: { auth?: bool
                 const protectedPaths = ['/app', '/admin', '/airtime', '/data', '/transactions', '/settings', '/rewards', '/chat'];
                 const isProtectedPage = protectedPaths.some(p => currentPath.startsWith(p));
                 if (isProtectedPage && !currentPath.startsWith('/login') && !currentPath.startsWith('/register')) {
-                  window.location.href = '/login';
+                  // Use setTimeout to allow React Query to handle the error first
+                  setTimeout(() => {
+                    window.location.href = '/login';
+                  }, 100);
                 }
               }
             }
@@ -178,7 +181,10 @@ async function request<T>(path: string, init?: RequestInit, opts?: { auth?: bool
               const protectedPaths = ['/app', '/admin', '/airtime', '/data', '/transactions', '/settings', '/rewards', '/chat'];
               const isProtectedPage = protectedPaths.some(p => currentPath.startsWith(p));
               if (isProtectedPage && !currentPath.startsWith('/login') && !currentPath.startsWith('/register')) {
-                window.location.href = '/login';
+                // Use setTimeout to allow React Query to handle the error first
+                setTimeout(() => {
+                  window.location.href = '/login';
+                }, 100);
               }
             }
           }
