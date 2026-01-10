@@ -11,6 +11,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { getAccessToken, setStoredUser, isRecentLogin } from "@/lib/storage";
 import { getProfile } from "@/lib/api";
 import { usePreferences } from "@/contexts/preferences-context";
+import { Footer } from "@/components/footer";
 
 const navKeys = [
   { href: "/app", key: "nav.dashboard", icon: Home },
@@ -147,7 +148,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }, [router]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-brand-50 via-white to-white dark:from-zinc-950 dark:via-zinc-950 dark:to-zinc-950">
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-brand-50 via-white to-white dark:from-zinc-950 dark:via-zinc-950 dark:to-zinc-950">
       <header className="sticky top-0 z-20 border-b border-zinc-200/60 bg-white/70 backdrop-blur dark:border-zinc-900 dark:bg-zinc-950/70">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
           <Link href="/app" className="group flex items-center gap-2">
@@ -175,8 +176,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </header>
 
-      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-4 px-4 py-6 md:grid-cols-[240px_1fr]">
-        <aside className="md:sticky md:top-[72px] md:h-[calc(100vh-72px)]">
+      <div className="flex-1 mx-auto grid max-w-6xl w-full grid-cols-1 gap-4 px-4 py-6 pb-24 md:grid-cols-[240px_1fr]">
+        <aside className="md:sticky md:top-[72px] md:h-[calc(100vh-72px-60px)]">
           <nav className="rounded-2xl bg-white shadow-soft ring-1 ring-zinc-100 dark:bg-zinc-950 dark:ring-zinc-900">
             <div className="px-4 py-4">
               <div className="text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
@@ -225,8 +226,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </nav>
         </aside>
 
-        <main className="min-w-0">{children}</main>
+        <main className="min-w-0 flex flex-col">
+          {children}
+        </main>
       </div>
+      
+      <Footer />
     </div>
   );
 }

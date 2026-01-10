@@ -37,10 +37,13 @@ function url(path: string) {
 export class ApiError extends Error {
   status: number;
   payload: unknown;
-  constructor(status: number, message: string, payload?: unknown) {
+  path?: string;
+  
+  constructor(status: number, message: string, payload?: unknown, path?: string) {
     super(message);
     this.status = status;
     this.payload = payload;
+    this.path = path;
   }
 }
 
@@ -116,9 +119,13 @@ async function request<T>(path: string, init?: RequestInit, opts?: { auth?: bool
   headers.set("Accept", "application/json");
   if (!headers.has("Content-Type") && init?.body) headers.set("Content-Type", "application/json");
 
+  let hasAuthToken = false;
   if (opts?.auth !== false) {
     const token = getAccessToken();
-    if (token) headers.set("Authorization", `Bearer ${token}`);
+    if (token) {
+      headers.set("Authorization", `Bearer ${token}`);
+      hasAuthToken = true;
+    }
   }
 
   try {
@@ -130,14 +137,13 @@ async function request<T>(path: string, init?: RequestInit, opts?: { auth?: bool
       // Handle 401 Unauthorized - try to refresh token first
       if (res.status === 401) {
         const isAuthEndpoint = path.includes('/login') || path.includes('/register') || path.includes('/auth') || path.includes('/refresh');
-        const hasToken = getAccessToken();
         const justLoggedIn = isRecentLogin(20000); // 20 seconds grace period after login
         
         // Don't try to refresh if:
         // 1. This is an auth endpoint (expected to return 401)
-        // 2. We don't have a token (we're not logged in)
+        // 2. We don't have a token (we're not logged in) - wait, hasAuthToken is from getAccessToken()
         // 3. We just logged in (within grace period - might be a race condition)
-        if (!isAuthEndpoint && hasToken && !justLoggedIn && opts?.auth !== false) {
+        if (!isAuthEndpoint && hasAuthToken && !justLoggedIn && opts?.auth !== false) {
           // Try to refresh the token
           const newAccessToken = await refreshAccessToken();
           
@@ -188,12 +194,6 @@ async function request<T>(path: string, init?: RequestInit, opts?: { auth?: bool
               }
             }
           }
-        } else if (isAuthEndpoint) {
-          // For auth endpoints, just throw the error (expected 401)
-        } else if (!hasToken) {
-          // No token, just throw error
-        } else if (justLoggedIn) {
-          // Just logged in, might be race condition, don't clear auth
         }
       }
       
@@ -204,12 +204,15 @@ async function request<T>(path: string, init?: RequestInit, opts?: { auth?: bool
         "Request failed";
       
       // Ensure msg is a string, handle object cases
-      const errorMessage = typeof msg === 'string' ? msg : 
+      let errorMessage = typeof msg === 'string' ? msg : 
                            msg && typeof msg === 'object' ? JSON.stringify(msg) :
                            String(msg || 'Request failed');
       
+      if (path) {
+        errorMessage = `${errorMessage} (Path: ${path})`;
+      }
+      
       // Only log in development mode, and suppress expected errors (401, 404)
-      // 401 errors are expected during auth flows, 404s are often handled gracefully
       if (process.env.NODE_ENV === 'development' && res.status !== 401 && res.status !== 404) {
         const errorInfo: Record<string, unknown> = {
           path,
@@ -218,27 +221,27 @@ async function request<T>(path: string, init?: RequestInit, opts?: { auth?: bool
           message: errorMessage,
         };
         
-        // Only include data if it exists and is meaningful
         if (data !== null && data !== undefined) {
           try {
-            // Try to stringify data to see if it's serializable
             const dataStr = typeof data === 'string' ? data : JSON.stringify(data);
             if (dataStr && dataStr !== '{}' && dataStr !== 'null') {
               errorInfo.data = data;
             }
           } catch {
-            // If stringify fails, include a note
             errorInfo.data = '[Non-serializable data]';
           }
         }
         
-        // Only log if errorInfo has meaningful content
         if (Object.keys(errorInfo).length > 0 && errorInfo.message) {
           console.error('API Error:', errorInfo);
         }
+      } else if (res.status === 401) {
+         // Log 401 errors specifically to help debug "Token not found"
+         console.warn(`[API] 401 Unauthorized for ${path}. Auth enabled: ${opts?.auth !== false}, Has Token: ${hasAuthToken}`);
+         console.trace("401 Unauthorized Request Trace");
       }
       
-      throw new ApiError(res.status, errorMessage, data);
+      throw new ApiError(res.status, errorMessage, data, path);
     }
 
     return data as T;
@@ -718,7 +721,7 @@ export async function buyData(input: {
   operatorId?: string;
   dataPlanId?: string;
 }) {
-  // This function is deprecated - use initiateAdvansiPayPayment and buyDataBundle separately
+  // This function is deprecated - use initiateAdvansiPayPayment and buyDataBundle instead.
   throw new Error("buyData is deprecated. Use initiateAdvansiPayPayment and buyDataBundle instead.");
 }
 
@@ -816,28 +819,18 @@ function getFallbackCountries(): Country[] {
     { code: "ZA", name: "South Africa", flag: "https://flagcdn.com/w80/za.png", callingCodes: ["+27"] },
     { code: "ZM", name: "Zambia", flag: "https://flagcdn.com/w80/zm.png", callingCodes: ["+260"] },
     { code: "ZW", name: "Zimbabwe", flag: "https://flagcdn.com/w80/zw.png", callingCodes: ["+263"] },
-    { code: "BW", name: "Botswana", flag: "https://flagcdn.com/w80/bw.png", callingCodes: ["+267"] },
-    { code: "MW", name: "Malawi", flag: "https://flagcdn.com/w80/mw.png", callingCodes: ["+265"] },
     // North America
     { code: "US", name: "United States", flag: "https://flagcdn.com/w80/us.png", callingCodes: ["+1"] },
     { code: "CA", name: "Canada", flag: "https://flagcdn.com/w80/ca.png", callingCodes: ["+1"] },
-    { code: "MX", name: "Mexico", flag: "https://flagcdn.com/w80/mx.png", callingCodes: ["+52"] },
     // Europe
     { code: "GB", name: "United Kingdom", flag: "https://flagcdn.com/w80/gb.png", callingCodes: ["+44"] },
     { code: "FR", name: "France", flag: "https://flagcdn.com/w80/fr.png", callingCodes: ["+33"] },
     { code: "DE", name: "Germany", flag: "https://flagcdn.com/w80/de.png", callingCodes: ["+49"] },
-    { code: "IT", name: "Italy", flag: "https://flagcdn.com/w80/it.png", callingCodes: ["+39"] },
     { code: "ES", name: "Spain", flag: "https://flagcdn.com/w80/es.png", callingCodes: ["+34"] },
     // Asia
     { code: "IN", name: "India", flag: "https://flagcdn.com/w80/in.png", callingCodes: ["+91"] },
     { code: "CN", name: "China", flag: "https://flagcdn.com/w80/cn.png", callingCodes: ["+86"] },
-    { code: "JP", name: "Japan", flag: "https://flagcdn.com/w80/jp.png", callingCodes: ["+81"] },
     { code: "AE", name: "United Arab Emirates", flag: "https://flagcdn.com/w80/ae.png", callingCodes: ["+971"] },
     { code: "SA", name: "Saudi Arabia", flag: "https://flagcdn.com/w80/sa.png", callingCodes: ["+966"] },
-    // Oceania
-    { code: "AU", name: "Australia", flag: "https://flagcdn.com/w80/au.png", callingCodes: ["+61"] },
-    { code: "NZ", name: "New Zealand", flag: "https://flagcdn.com/w80/nz.png", callingCodes: ["+64"] },
   ];
 }
-
-

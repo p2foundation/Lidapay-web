@@ -26,10 +26,23 @@ export default {
       boxShadow: {
         soft: "0 8px 30px rgba(0,0,0,0.08)",
         glow: "0 10px 40px rgba(236,72,153,0.25)"
-      }
+      },
+      animation: {
+        'gradient-x': 'gradient-x 15s ease infinite',
+      },
+      keyframes: {
+        'gradient-x': {
+          '0%, 100%': {
+            'background-size': '200% 200%',
+            'background-position': 'left center',
+          },
+          '50%': {
+            'background-size': '200% 200%',
+            'background-position': 'right center',
+          },
+        },
+      },
     }
   },
   plugins: []
 } satisfies Config;
-
-

@@ -12,6 +12,10 @@
   --fg: 245 245 245;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 html,
 body {
   height: 100%;

@@ -1,10 +1,11 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { AIChatWidget } from "@/components/ai-chat-widget";
+import { Footer } from "@/components/footer";
 import { 
   Globe, 
   Phone, 
@@ -29,124 +30,140 @@ import {
   Globe2,
   MapPin,
   Clock,
-  Award
+  Award,
+  ChevronDown,
+  Play
 } from "lucide-react";
+import { useRef, useState } from "react";
 
 export default function LandingPage() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"]
+  });
+
+  const heroY = useTransform(scrollYProgress, [0, 0.2], [0, 100]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
+
   return (
-    <div className="min-h-screen bg-white dark:bg-zinc-950 overflow-hidden">
-      {/* Animated Background */}
-      <div className="fixed inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-to-br from-brand-50 via-white to-indigo-50 dark:from-zinc-950 dark:via-zinc-950 dark:to-zinc-900" />
-        <motion.div
-          className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-gradient-to-br from-brand-400/20 to-indigoBrand-500/20 blur-3xl"
-          animate={{
-            x: [0, 100, 0],
-            y: [0, -100, 0],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-        />
-        <motion.div
-          className="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-gradient-to-tr from-indigoBrand-400/20 to-brand-500/20 blur-3xl"
-          animate={{
-            x: [0, -100, 0],
-            y: [0, 100, 0],
-          }}
-          transition={{
-            duration: 25,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-        />
-      </div>
-
-      {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 border-b border-zinc-200/60 bg-white/80 backdrop-blur-xl dark:border-zinc-900 dark:bg-zinc-950/80">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-3 sm:px-4 py-3 sm:py-4">
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="group flex items-center gap-2 sm:gap-3 min-w-0"
+    <div ref={containerRef} className="min-h-screen bg-white dark:bg-zinc-950 overflow-hidden selection:bg-brand-500/30 selection:text-brand-900 dark:selection:text-brand-50">
+      {/* Video Hero Section - Full Screen with Integrated Header */}
+      <section className="relative h-screen w-full overflow-hidden flex flex-col">
+        {/* Video Background - Covers Everything */}
+        <div className="absolute inset-0 z-0">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover"
+            onLoadedData={() => setIsVideoLoaded(true)}
+            poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1920 1080'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23ec4899;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%234f46e5;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='1920' height='1080' fill='url(%23grad)'/%3E%3C/svg%3E"
           >
-            <div className="relative flex-shrink-0">
-              <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-xl bg-gradient-to-br from-brand-500 to-indigoBrand-600 shadow-lg shadow-brand-500/25" />
-              <motion.div
-                className="absolute -inset-1 rounded-xl bg-gradient-to-br from-brand-500 to-indigoBrand-600 opacity-0 group-hover:opacity-30 blur transition-opacity"
-              />
-            </div>
-            <div className="leading-tight min-w-0">
-              <div className="text-xs sm:text-sm font-black tracking-tight text-zinc-900 dark:text-zinc-50 truncate">Lidapay</div>
-              <div className="hidden xs:block text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400">Global • Trusted • Fast</div>
-            </div>
-          </motion.div>
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-1.5 sm:gap-2 md:gap-3 flex-shrink-0"
-          >
-            <ThemeToggle />
-            <Link 
-              href="https://play.google.com/store/apps/details?id=com.advansistechnologies.lidapay&pcampaignid=web_share" 
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden lg:block"
-            >
-              <img 
-                alt="Get it on Google Play" 
-                src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
-                className="h-8 sm:h-10 w-auto"
-              />
-            </Link>
-            <Link href="/login">
-              <Button variant="secondary" size="sm" className="h-9 sm:h-10 px-3 sm:px-4 text-xs sm:text-sm">
-                <span className="hidden sm:inline">Sign In</span>
-                <span className="sm:hidden">Login</span>
-              </Button>
-            </Link>
-            <Link href="/register">
-              <Button size="sm" className="h-9 sm:h-10 px-3 sm:px-4 text-xs sm:text-sm">
-                <span className="hidden sm:inline">Get Started</span>
-                <span className="sm:hidden">Join</span>
-                <ArrowRight className="ml-1 sm:ml-2 h-3 w-3 sm:h-4 sm:w-4" />
-              </Button>
-            </Link>
-          </motion.div>
+            <source src="https://videos.pexels.com/video-files/3045163/3045163-hd_1920_1080_30fps.mp4" type="video/mp4" />
+            {/* Fallback gradient if video fails */}
+          </video>
+          {/* Overlay for better text readability */}
+          <div className="absolute inset-0 bg-gradient-to-b from-zinc-900/60 via-zinc-900/40 to-zinc-900/60" />
+          <div className="absolute inset-0 bg-gradient-to-r from-brand-900/20 to-indigoBrand-900/20" />
         </div>
-      </header>
 
-      <main className="pt-14 sm:pt-16 md:pt-20">
-        {/* Hero Section */}
-        <section className="relative">
-          <div className="mx-auto max-w-7xl px-3 sm:px-4 py-12 sm:py-20 md:py-24 lg:py-32">
-            <div className="grid grid-cols-1 items-center gap-8 sm:gap-12 lg:grid-cols-2">
+        {/* Header - Integrated into Hero */}
+        <header className="relative z-50 border-b border-white/10 bg-white/5 backdrop-blur-xl flex-shrink-0">
+          <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 py-4">
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+              className="group flex items-center gap-3"
+            >
+              <div className="relative">
+                <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-brand-500 to-indigoBrand-600 shadow-lg shadow-brand-500/20 flex items-center justify-center">
+                  <Globe className="h-6 w-6 text-white" />
+                </div>
+                <motion.div
+                  className="absolute -inset-2 rounded-xl bg-brand-500/20 opacity-0 group-hover:opacity-100 blur transition-opacity"
+                />
+              </div>
+              <div>
+                <div className="text-sm font-black tracking-tight text-white">LidaPay</div>
+                <div className="text-xs font-medium text-white/80">Global Remittance</div>
+              </div>
+            </motion.div>
+
+            <motion.div 
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+              className="flex items-center gap-3"
+            >
+              <div className="hidden md:flex items-center gap-6 mr-4">
+                <Link 
+                  href="/airtime" 
+                  className="text-sm font-medium text-white/90 hover:text-white transition-colors cursor-pointer relative z-10"
+                >
+                  Airtime
+                </Link>
+                <Link 
+                  href="/data" 
+                  className="text-sm font-medium text-white/90 hover:text-white transition-colors cursor-pointer relative z-10"
+                >
+                  Data Bundles
+                </Link>
+                <Link 
+                  href="/settings/help" 
+                  className="text-sm font-medium text-white/90 hover:text-white transition-colors cursor-pointer relative z-10"
+                >
+                  Help
+                </Link>
+              </div>
+              <ThemeToggle />
+              <div className="h-6 w-px bg-white/20 hidden sm:block" />
+              <Link href="/login" className="hidden sm:block">
+                <Button variant="ghost" size="sm" className="font-semibold text-white hover:bg-white/10 border-white/20">
+                  Sign In
+                </Button>
+              </Link>
+              <Link href="/register">
+                <Button size="sm" className="font-semibold shadow-lg shadow-brand-500/20 bg-white text-zinc-900 hover:bg-zinc-100">
+                  Get Started
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            </motion.div>
+          </div>
+        </header>
+
+        {/* Hero Content - Takes Remaining Space */}
+        <div className="relative z-10 flex-1 flex items-center">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 w-full">
+            <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-24">
               <motion.div 
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
+                transition={{ delay: 0.3, duration: 0.8 }}
+                className="relative z-10"
               >
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.1 }}
-                  className="inline-flex items-center gap-1.5 sm:gap-2 rounded-full bg-gradient-to-r from-brand-500/10 to-indigoBrand-500/10 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-bold text-brand-700 dark:text-brand-300 ring-1 ring-brand-500/20"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4, duration: 0.6 }}
+                  className="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-sm px-4 py-2 text-sm font-medium text-white ring-1 ring-white/20"
                 >
-                  <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
-                  <span className="whitespace-nowrap">Trusted by 100,000+ users</span>
-                  <ArrowRight className="h-2.5 w-2.5 sm:h-3 sm:w-3 flex-shrink-0 hidden sm:inline" />
+                  <span className="flex h-2 w-2 rounded-full bg-brand-400 animate-pulse" />
+                  Trusted by 100,000+ users worldwide
                 </motion.div>
                 
                 <motion.h1 
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
-                  className="mt-4 sm:mt-6 text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black tracking-tight text-zinc-900 dark:text-zinc-50 leading-tight"
+                  transition={{ delay: 0.5, duration: 0.6 }}
+                  className="mt-8 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-white leading-[1.1]"
                 >
-                  Global Airtime &{" "}
-                  <span className="block bg-gradient-to-r from-brand-600 to-indigoBrand-600 bg-clip-text text-transparent">
+                  Global Airtime & <br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-300 via-indigoBrand-300 to-brand-300">
                     Data Remittance
                   </span>
                 </motion.h1>
@@ -154,189 +171,216 @@ export default function LandingPage() {
                 <motion.p 
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                  className="mt-4 sm:mt-6 text-base sm:text-lg md:text-xl text-zinc-600 dark:text-zinc-300 leading-relaxed"
+                  transition={{ delay: 0.6, duration: 0.6 }}
+                  className="mt-6 text-lg sm:text-xl text-white/90 leading-relaxed max-w-lg"
                 >
-                  The fastest way to send mobile top-ups and data bundles to friends and family in 150+ countries. Secure, reliable, and instant.
+                  Instantly send mobile top-ups and data bundles to friends and family in over 150 countries. Secure, reliable, and faster than ever.
                 </motion.p>
                 
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className="mt-6 sm:mt-8 flex flex-col gap-3 sm:gap-4"
+                  transition={{ delay: 0.7, duration: 0.6 }}
+                  className="mt-10 flex flex-col sm:flex-row gap-4 items-start"
                 >
                   <Link href="/register" className="w-full sm:w-auto">
-                    <Button size="lg" className="group w-full sm:w-auto h-11 sm:h-12 px-6 sm:px-8 text-sm sm:text-base">
-                      Start Sending Now
-                      <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5 transition-transform group-hover:translate-x-1" />
+                    <Button size="lg" className="w-full sm:w-auto h-12 px-8 text-base font-bold shadow-xl shadow-brand-500/30 hover:shadow-2xl hover:shadow-brand-500/40 transition-all hover:-translate-y-0.5 bg-white text-zinc-900 hover:bg-zinc-100">
+                      Start Sending
+                      <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
                   </Link>
                   <Link 
                     href="https://play.google.com/store/apps/details?id=com.advansistechnologies.lidapay&pcampaignid=web_share" 
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full sm:w-auto inline-block"
+                    className="w-full sm:w-auto"
                   >
                     <img 
                       alt="Get it on Google Play" 
                       src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
-                      className="h-12 sm:h-14 w-auto mx-auto sm:mx-0"
+                      className="h-14 sm:h-16 w-auto hover:opacity-90 transition-opacity"
                     />
                   </Link>
                 </motion.div>
 
                 <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 }}
-                  className="mt-6 sm:mt-8 grid grid-cols-3 gap-2 sm:gap-4"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.9, duration: 0.8 }}
+                  className="mt-12 flex items-center gap-8 text-white/80"
                 >
-                  {[
-                    { value: "150+", label: "Countries" },
-                    { value: "24/7", label: "Support" },
-                    { value: "100K+", label: "Users" }
-                  ].map((stat, i) => (
-                    <motion.div
-                      key={i}
-                      whileHover={{ scale: 1.05 }}
-                      className="rounded-xl sm:rounded-2xl bg-white/60 p-2.5 sm:p-4 text-center backdrop-blur-sm ring-1 ring-zinc-200/60 dark:bg-zinc-900/60 dark:ring-zinc-800"
-                    >
-                      <div className="text-lg sm:text-xl md:text-2xl font-black text-zinc-900 dark:text-zinc-50">{stat.value}</div>
-                      <div className="text-xs sm:text-sm font-medium text-zinc-600 dark:text-zinc-400 mt-0.5 sm:mt-1">{stat.label}</div>
-                    </motion.div>
-                  ))}
+                  <div className="flex -space-x-3">
+                    {[1, 2, 3, 4].map((i) => (
+                      <div key={i} className="h-10 w-10 rounded-full bg-white/20 backdrop-blur-sm ring-2 ring-white/30 flex items-center justify-center overflow-hidden">
+                        <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i}`} alt="User" className="h-full w-full" />
+                      </div>
+                    ))}
+                    <div className="h-10 w-10 rounded-full bg-white/20 backdrop-blur-sm ring-2 ring-white/30 flex items-center justify-center text-xs font-bold text-white">
+                      +100k
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="flex text-yellow-300">
+                      {[1, 2, 3, 4, 5].map((i) => (
+                        <Star key={i} className="h-4 w-4 fill-current" />
+                      ))}
+                    </div>
+                    <span className="text-sm font-semibold text-white">4.9/5 Rating</span>
+                  </div>
                 </motion.div>
               </motion.div>
 
+              {/* Larger Phone Mockup */}
               <motion.div 
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.3 }}
-                className="relative mt-8 lg:mt-0"
+                initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
+                animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                transition={{ 
+                  delay: 0.4, 
+                  type: "spring",
+                  stiffness: 100,
+                  damping: 20
+                }}
+                className="relative lg:ml-auto"
               >
+                <div className="relative z-10 mx-auto max-w-[500px] lg:max-w-[550px] rounded-[2.5rem] border-[12px] border-zinc-900 bg-zinc-950 shadow-2xl">
+                  <div className="h-[48px] w-full bg-zinc-900 rounded-t-[2rem] flex items-center justify-center relative overflow-hidden">
+                    <div className="h-6 w-40 bg-zinc-800 rounded-full" />
+                  </div>
+                  <div className="relative aspect-[9/19] bg-zinc-900 overflow-hidden rounded-b-[2rem]">
+                    <div className="absolute inset-0 bg-white dark:bg-zinc-950">
+                      {/* App UI Simulation */}
+                      <div className="h-full w-full p-8 lg:p-10 flex flex-col">
+                         <div className="flex items-center justify-between mb-8">
+                           <div>
+                             <div className="text-base lg:text-lg text-zinc-500">Total Balance</div>
+                             <div className="text-3xl lg:text-4xl font-bold text-zinc-900 dark:text-zinc-50">$1,240.50</div>
+                           </div>
+                           <div className="h-12 w-12 lg:h-14 lg:w-14 rounded-full bg-zinc-100 dark:bg-zinc-800" />
+                         </div>
+
+                         <div className="grid grid-cols-2 gap-4 lg:gap-5 mb-6">
+                           <div className="flex flex-col justify-center items-start p-6 lg:p-7 rounded-3xl bg-gradient-to-br from-brand-500 to-brand-600 text-white shadow-lg">
+                             <Phone className="h-10 w-10 lg:h-12 lg:w-12 mb-4 flex-shrink-0" />
+                             <div className="text-xl lg:text-2xl font-bold leading-tight mb-2">Airtime</div>
+                             <div className="text-sm lg:text-base text-white/90 leading-snug">Top up instantly</div>
+                           </div>
+                           <div className="flex flex-col justify-center items-start p-6 lg:p-7 rounded-3xl bg-gradient-to-br from-indigoBrand-500 to-indigoBrand-600 text-white shadow-lg">
+                             <Wifi className="h-10 w-10 lg:h-12 lg:w-12 mb-4 flex-shrink-0" />
+                             <div className="text-xl lg:text-2xl font-bold leading-tight mb-2">Data</div>
+                             <div className="text-sm lg:text-base text-white/90 leading-snug">Buy bundles</div>
+                           </div>
+                         </div>
+
+                         <div className="mt-auto">
+                           <div className="font-semibold text-base lg:text-lg text-zinc-900 dark:text-zinc-50 mb-3">Recent Activity</div>
+                           <div className="space-y-2">
+                             {[1, 2].map((i) => (
+                               <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-zinc-50 dark:bg-zinc-900">
+                                 <div className="h-10 w-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600">
+                                   <ArrowRight className="h-4 w-4 -rotate-45" />
+                                 </div>
+                                 <div className="flex-1">
+                                   <div className="font-medium text-sm">Sent to Sarah</div>
+                                   <div className="text-xs text-zinc-500">Today, 10:23 AM</div>
+                                 </div>
+                                 <div className="font-bold text-sm">-$20.00</div>
+                               </div>
+                             ))}
+                           </div>
+                         </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Floating Elements */}
                 <motion.div
-                  animate={{
-                    y: [0, -20, 0],
-                  }}
-                  transition={{
-                    duration: 6,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                  className="relative"
+                  animate={{ y: [0, -20, 0] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                  className="absolute -right-8 top-20 z-20 rounded-2xl bg-white/95 backdrop-blur-sm p-4 shadow-xl dark:bg-zinc-900/95 ring-1 ring-black/5"
                 >
-                  <div className="absolute -inset-4 sm:-inset-6 md:-inset-8 rounded-[24px] sm:rounded-[32px] md:rounded-[40px] bg-gradient-to-br from-brand-500/20 via-indigoBrand-500/20 to-brand-600/20 blur-2xl" />
-                  <div className="relative rounded-[20px] sm:rounded-[24px] md:rounded-[32px] bg-gradient-to-br from-zinc-900 to-zinc-800 p-1.5 sm:p-2 shadow-2xl">
-                    <div className="rounded-[18px] sm:rounded-[22px] md:rounded-[28px] bg-gradient-to-br from-brand-500 via-brand-600 to-indigoBrand-600 p-4 sm:p-6 md:p-8">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <div className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-white/70">Available Now</div>
-                          <div className="mt-0.5 sm:mt-1 text-xl sm:text-2xl md:text-3xl font-black text-white">Global Top-Up</div>
-                        </div>
-                        <div className="rounded-xl sm:rounded-2xl bg-white/20 p-2 sm:p-3 flex-shrink-0">
-                          <Globe className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8 text-white" />
-                        </div>
-                      </div>
-                      
-                      <div className="mt-4 sm:mt-6 space-y-2 sm:space-y-3">
-                        {[
-                          { icon: Phone, label: "Airtime Recharge", desc: "Instant top-up to any mobile number" },
-                          { icon: Wifi, label: "Data Bundles", desc: "Buy data packages for any network" },
-                          { icon: CreditCard, label: "Secure Payment", desc: "Multiple payment options" }
-                        ].map((item, i) => (
-                          <motion.div
-                            key={i}
-                            whileHover={{ scale: 1.02, x: 5 }}
-                            className="rounded-xl sm:rounded-2xl bg-white/10 p-3 sm:p-4 backdrop-blur-sm transition-all"
-                          >
-                            <div className="flex items-center gap-2 sm:gap-3">
-                              <div className="rounded-lg sm:rounded-xl bg-white/20 p-1.5 sm:p-2 flex-shrink-0">
-                                <item.icon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <div className="text-sm sm:text-base font-bold text-white truncate">{item.label}</div>
-                                <div className="text-xs sm:text-sm text-white/80 line-clamp-2">{item.desc}</div>
-                              </div>
-                            </div>
-                          </motion.div>
-                        ))}
-                      </div>
-                      
-                      <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row gap-2 sm:gap-3">
-                        <Link href="/register" className="flex-1">
-                          <Button className="w-full bg-white text-zinc-900 hover:bg-zinc-100 h-10 sm:h-11 text-sm sm:text-base">
-                            Send Top-up
-                          </Button>
-                        </Link>
-                        <Link href="/airtime" className="flex-1">
-                          <Button variant="secondary" className="w-full border-white/20 bg-white/10 text-white hover:bg-white/20 h-10 sm:h-11 text-sm sm:text-base">
-                            See Rates
-                          </Button>
-                        </Link>
-                      </div>
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100 text-green-600">
+                      <CheckCircle className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-zinc-500">Transaction Status</p>
+                      <p className="font-bold text-zinc-900 dark:text-zinc-50">Successful</p>
+                    </div>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  animate={{ y: [0, 20, 0] }}
+                  transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                  className="absolute -left-8 bottom-40 z-20 rounded-2xl bg-white/95 backdrop-blur-sm p-4 shadow-xl dark:bg-zinc-900/95 ring-1 ring-black/5"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-100 text-brand-600">
+                      <Zap className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-zinc-500">Delivery Time</p>
+                      <p className="font-bold text-zinc-900 dark:text-zinc-50">Instant</p>
                     </div>
                   </div>
                 </motion.div>
               </motion.div>
             </div>
-          </div>
-        </section>
-
-        {/* Features Grid */}
-        <section className="relative py-12 sm:py-16 md:py-20 lg:py-24">
-          <div className="mx-auto max-w-7xl px-3 sm:px-4">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-center"
+            
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.2, duration: 1 }}
+              className="absolute bottom-8 left-1/2 -translate-x-1/2 hidden lg:flex flex-col items-center gap-2"
             >
-              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-tight text-zinc-900 dark:text-zinc-50">
+              <span className="text-xs text-white/70 font-medium">Scroll to explore</span>
+              <motion.div
+                animate={{ y: [0, 8, 0] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              >
+                <ChevronDown className="h-4 w-4 text-white/70" />
+              </motion.div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      <main className="pb-24">
+        {/* Why Choose Us */}
+        <section className="py-20 sm:py-32 relative overflow-hidden bg-white dark:bg-zinc-950">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <div className="text-center max-w-3xl mx-auto mb-20">
+              <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-zinc-900 dark:text-zinc-50 mb-6">
                 Why Choose LidaPay?
               </h2>
-              <p className="mt-3 sm:mt-4 text-base sm:text-lg md:text-xl text-zinc-600 dark:text-zinc-300 px-4">
-                Experience the difference with our world-class features
+              <p className="text-lg text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                Experience the difference with our world-class remittance platform designed for speed, security, and simplicity.
               </p>
-            </motion.div>
+            </div>
 
-            <div className="mt-8 sm:mt-12 md:mt-16 grid grid-cols-1 gap-4 sm:gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {[
-                {
-                  icon: Globe2,
-                  title: "Global Coverage",
-                  desc: "Send airtime and data to over 150 countries worldwide. No boundaries, no limits.",
-                  gradient: "from-blue-500 to-cyan-500"
-                },
                 {
                   icon: Zap,
                   title: "Instant Delivery",
-                  desc: "Lightning-fast top-ups delivered within seconds. No waiting, no delays.",
-                  gradient: "from-yellow-500 to-orange-500"
+                  desc: "Transactions are processed in real-time. No waiting, no delays.",
+                  gradient: "from-amber-400 to-orange-500",
+                  bg: "bg-amber-50 dark:bg-amber-900/10"
                 },
                 {
                   icon: ShieldCheck,
-                  title: "Bank-Level Security",
-                  desc: "Your transactions are protected with enterprise-grade encryption.",
-                  gradient: "from-green-500 to-emerald-500"
+                  title: "Bank-Grade Security",
+                  desc: "Your data and payments are protected by enterprise-level encryption.",
+                  gradient: "from-emerald-400 to-green-500",
+                  bg: "bg-emerald-50 dark:bg-emerald-900/10"
                 },
                 {
-                  icon: CreditCard,
-                  title: "Multiple Payment Options",
-                  desc: "Pay with card, mobile money, or bank transfer. Flexibility at its best.",
-                  gradient: "from-purple-500 to-pink-500"
-                },
-                {
-                  icon: Gift,
-                  title: "Rewards Program",
-                  desc: "Earn points with every transaction and redeem amazing rewards.",
-                  gradient: "from-red-500 to-rose-500"
-                },
-                {
-                  icon: Headphones,
-                  title: "24/7 Support",
-                  desc: "Our support team is always here to help, anytime, anywhere.",
-                  gradient: "from-indigo-500 to-blue-500"
+                  icon: Globe2,
+                  title: "Global Reach",
+                  desc: "Connect with over 150 countries instantly through our vast network.",
+                  gradient: "from-blue-400 to-indigo-500",
+                  bg: "bg-blue-50 dark:bg-blue-900/10"
                 }
               ].map((feature, i) => (
                 <motion.div
@@ -344,18 +388,18 @@ export default function LandingPage() {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  whileHover={{ scale: 1.02, y: -5 }}
-                  className="group relative"
+                  transition={{ delay: i * 0.2 }}
+                  whileHover={{ y: -5 }}
+                  className="relative p-8 rounded-[2rem] border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 shadow-xl shadow-zinc-200/50 dark:shadow-none overflow-hidden group"
                 >
-                  <div className="absolute -inset-0.5 rounded-3xl bg-gradient-to-r opacity-0 blur transition-opacity group-hover:opacity-30" />
-                  <div className="relative rounded-2xl sm:rounded-3xl bg-white p-5 sm:p-6 md:p-8 shadow-lg ring-1 ring-zinc-200/60 dark:bg-zinc-900 dark:ring-zinc-800">
-                    <div className={`inline-flex rounded-xl sm:rounded-2xl bg-gradient-to-r ${feature.gradient} p-2.5 sm:p-3`}>
-                      <feature.icon className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
-                    </div>
-                    <h3 className="mt-3 sm:mt-4 text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-50">{feature.title}</h3>
-                    <p className="mt-2 text-sm sm:text-base text-zinc-600 dark:text-zinc-300 leading-relaxed">{feature.desc}</p>
+                  <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${feature.gradient} opacity-10 rounded-bl-[100%] transition-transform group-hover:scale-110`} />
+                  
+                  <div className={`h-14 w-14 rounded-2xl ${feature.bg} flex items-center justify-center mb-6 relative z-10`}>
+                    <feature.icon className="h-7 w-7 text-zinc-900 dark:text-zinc-50" />
                   </div>
+                  
+                  <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 mb-3 relative z-10">{feature.title}</h3>
+                  <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed relative z-10">{feature.desc}</p>
                 </motion.div>
               ))}
             </div>
@@ -363,306 +407,288 @@ export default function LandingPage() {
         </section>
 
         {/* How It Works */}
-        <section className="relative py-12 sm:py-16 md:py-20 lg:py-24">
-          <div className="mx-auto max-w-7xl px-3 sm:px-4">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-center"
-            >
-              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-tight text-zinc-900 dark:text-zinc-50">
-                How It Works
-              </h2>
-              <p className="mt-3 sm:mt-4 text-base sm:text-lg md:text-xl text-zinc-600 dark:text-zinc-300 px-4">
-                Send airtime and data in 3 simple steps
-              </p>
-            </motion.div>
+        <section className="py-20 sm:py-32 bg-zinc-50 dark:bg-zinc-900/50 relative">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+              <div>
+                <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-zinc-900 dark:text-zinc-50 mb-6">
+                  How It Works
+                </h2>
+                <p className="text-lg text-zinc-600 dark:text-zinc-400 mb-12 leading-relaxed">
+                  Sending airtime and data is as easy as 1-2-3. No complicated forms or long waiting times.
+                </p>
 
-            <div className="mt-8 sm:mt-12 md:mt-16 grid grid-cols-1 gap-6 sm:gap-8 md:grid-cols-3">
-              {[
-                {
-                  step: "01",
-                  icon: Users,
-                  title: "Sign Up",
-                  desc: "Create your free account in seconds"
-                },
-                {
-                  step: "02",
-                  icon: Smartphone,
-                  title: "Enter Details",
-                  desc: "Add recipient number and amount"
-                },
-                {
-                  step: "03",
-                  icon: Rocket,
-                  title: "Send Instantly",
-                  desc: "Airtime/data delivered immediately"
-                }
-              ].map((step, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.2 }}
-                  className="relative"
-                >
-                  <div className="text-center">
-                    <div className="mx-auto inline-flex items-center justify-center rounded-xl sm:rounded-2xl bg-gradient-to-br from-brand-500 to-indigoBrand-600 p-3 sm:p-4 text-2xl sm:text-3xl font-black text-white shadow-lg">
-                      {step.step}
+                <div className="space-y-8">
+                  {[
+                    {
+                      step: "01",
+                      title: "Create an Account",
+                      desc: "Sign up in seconds for free. No hidden fees or maintenance charges."
+                    },
+                    {
+                      step: "02",
+                      title: "Choose Recipient",
+                      desc: "Select from over 150 countries and enter the recipient's phone number."
+                    },
+                    {
+                      step: "03",
+                      title: "Send Instantly",
+                      desc: "Choose amount and pay. The top-up arrives instantly on their phone."
+                    }
+                  ].map((item, i) => (
+                    <motion.div 
+                      key={i}
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: i * 0.2 }}
+                      className="flex gap-6"
+                    >
+                      <div className="flex-shrink-0 w-12 h-12 rounded-full bg-white dark:bg-zinc-800 flex items-center justify-center font-bold text-brand-600 shadow-md border border-zinc-100 dark:border-zinc-700">
+                        {item.step}
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 mb-2">{item.title}</h3>
+                        <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed">{item.desc}</p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-tr from-brand-500/20 to-indigoBrand-500/20 rounded-[3rem] blur-3xl" />
+                <div className="relative bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-[3rem] p-8 shadow-2xl">
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-6">
+                      <div>
+                        <div className="text-sm text-zinc-500 mb-1">Exchange Rate</div>
+                        <div className="font-bold text-zinc-900 dark:text-zinc-50">1 USD = 15.50 GHS</div>
+                      </div>
+                      <div className="h-10 w-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                        <TrendingUp className="h-5 w-5 text-green-500" />
+                      </div>
                     </div>
-                    <div className="mt-4 sm:mt-6 rounded-xl sm:rounded-2xl bg-white p-4 sm:p-6 shadow-lg ring-1 ring-zinc-200/60 dark:bg-zinc-900 dark:ring-zinc-800">
-                      <step.icon className="mx-auto h-6 w-6 sm:h-8 sm:w-8 text-brand-600" />
-                      <h3 className="mt-3 sm:mt-4 text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-50">{step.title}</h3>
-                      <p className="mt-2 text-sm sm:text-base text-zinc-600 dark:text-zinc-300">{step.desc}</p>
-                    </div>
-                    {i < 2 && (
-                      <div className="absolute left-1/2 top-6 sm:top-8 hidden w-full -translate-y-1/2 md:block">
-                        <div className="flex items-center justify-center">
-                          <ArrowRight className="h-5 w-5 sm:h-6 sm:w-6 text-zinc-300" />
+                    
+                    <div className="space-y-4">
+                      <div className="bg-zinc-50 dark:bg-zinc-900 rounded-2xl p-4 border border-zinc-100 dark:border-zinc-800">
+                        <div className="text-xs text-zinc-500 mb-2">You Send</div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">100.00</span>
+                          <div className="flex items-center gap-2 bg-white dark:bg-zinc-800 rounded-lg px-3 py-1.5 shadow-sm border border-zinc-200 dark:border-zinc-700">
+                            <img src="https://flagcdn.com/w40/us.png" className="w-5 h-auto rounded-sm" alt="US" />
+                            <span className="font-bold text-sm">USD</span>
+                          </div>
                         </div>
                       </div>
-                    )}
+
+                      <div className="flex justify-center -my-3 relative z-10">
+                        <div className="h-8 w-8 rounded-full bg-brand-500 text-white flex items-center justify-center shadow-lg border-4 border-white dark:border-zinc-950">
+                          <ArrowRight className="h-4 w-4 rotate-90" />
+                        </div>
+                      </div>
+
+                      <div className="bg-zinc-50 dark:bg-zinc-900 rounded-2xl p-4 border border-zinc-100 dark:border-zinc-800">
+                        <div className="text-xs text-zinc-500 mb-2">Recipient Gets</div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">1,550.00</span>
+                          <div className="flex items-center gap-2 bg-white dark:bg-zinc-800 rounded-lg px-3 py-1.5 shadow-sm border border-zinc-200 dark:border-zinc-700">
+                            <img src="https://flagcdn.com/w40/gh.png" className="w-5 h-auto rounded-sm" alt="GH" />
+                            <span className="font-bold text-sm">GHS</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <Button className="w-full h-12 text-base font-bold bg-brand-600 hover:bg-brand-700 text-white rounded-xl shadow-lg shadow-brand-500/20">
+                      Send Now
+                    </Button>
                   </div>
-                </motion.div>
-              ))}
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* Trust Badges */}
-        <section className="relative py-12 sm:py-16 md:py-20 lg:py-24">
-          <div className="mx-auto max-w-7xl px-3 sm:px-4">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="rounded-2xl sm:rounded-3xl bg-gradient-to-br from-brand-500 to-indigoBrand-600 p-6 sm:p-8 md:p-12 text-center text-white"
-            >
-              <div className="mx-auto max-w-3xl">
-                <Award className="mx-auto h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 text-white/80" />
-                <h3 className="mt-4 sm:mt-6 text-xl sm:text-2xl md:text-3xl font-black px-2">Trusted by Millions Worldwide</h3>
-                <p className="mt-3 sm:mt-4 text-sm sm:text-base md:text-lg text-white/90 px-2">
-                  Join over 100,000 satisfied customers who trust LidaPay for their mobile top-up needs
-                </p>
-                <div className="mt-6 sm:mt-8 grid grid-cols-2 gap-4 sm:gap-6 md:gap-8 md:grid-cols-4">
-                  {[
-                    { value: "$10M+", label: "Transactions" },
-                    { value: "99.9%", label: "Uptime" },
-                    { value: "4.8★", label: "App Rating" },
-                    { value: "150+", label: "Countries" }
-                  ].map((badge, i) => (
-                    <div key={i}>
-                      <div className="text-xl sm:text-2xl md:text-3xl font-black">{badge.value}</div>
-                      <div className="text-xs sm:text-sm text-white/80 mt-0.5 sm:mt-1">{badge.label}</div>
-                    </div>
-                  ))}
-                </div>
-                <Link href="/login" className="inline-block mt-6 sm:mt-8">
-                  <Button size="lg" className="w-full sm:w-auto h-11 sm:h-12 px-6 sm:px-8 text-sm sm:text-base bg-white text-zinc-900 hover:bg-zinc-100">
-                    Get Started Now
-                    <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
-                  </Button>
-                </Link>
-              </div>
-            </motion.div>
+        {/* Global Reach - Connecting 150+ Countries */}
+        <section className="relative overflow-hidden py-24 sm:py-32 bg-gradient-to-b from-white via-zinc-50 to-white dark:from-zinc-950 dark:via-zinc-950 dark:to-zinc-950">
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute -top-1/3 -left-1/4 h-96 w-96 rounded-full bg-brand-500/10 blur-[140px]" />
+            <div className="absolute -bottom-1/3 -right-1/4 h-[28rem] w-[28rem] rounded-full bg-indigoBrand-500/10 blur-[160px]" />
           </div>
-        </section>
 
-        {/* Global Reach Section */}
-        <section className="relative py-12 sm:py-16 md:py-20 lg:py-24 bg-zinc-50 dark:bg-zinc-900/50">
-          <div className="mx-auto max-w-7xl px-3 sm:px-4">
-            <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 items-center">
+          <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
+            <div className="grid grid-cols-1 items-center gap-16 lg:grid-cols-[1.1fr,0.9fr]">
               <motion.div
-                initial={{ opacity: 0, x: -20 }}
+                initial={{ opacity: 0, x: -30 }}
                 whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.5 }}
               >
-                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-tight text-zinc-900 dark:text-zinc-50">
-                  Connecting You to <span className="text-brand-600">150+ Countries</span>
-                </h2>
-                <p className="mt-4 text-lg text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                  Whether you're sending airtime to family in Nigeria, data to friends in Ghana, or topping up your own phone while traveling in Kenya, LidaPay has you covered.
+                <p className="text-xs font-semibold uppercase tracking-[0.4em] text-brand-500 mb-6">
+                  Global Network
                 </p>
-                
-                <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3">
+                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-zinc-900 dark:text-zinc-50 mb-6">
+                  Connecting You to <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-500 via-rose-500 to-indigoBrand-500">150+</span> Countries
+                </h2>
+                <p className="text-lg text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-2xl">
+                  Whether you're sending airtime to family in Nigeria, data to friends in Ghana, or topping up your own phone while traveling in Kenya, LidaPay has you covered with reliable coverage on every continent.
+                </p>
+
+                <div className="mt-12 grid grid-cols-2 sm:grid-cols-3 gap-4">
                   {[
-                    { name: "Ghana", code: "GH" },
-                    { name: "Nigeria", code: "NG" },
-                    { name: "Kenya", code: "KE" },
-                    { name: "South Africa", code: "ZA" },
-                    { name: "Uganda", code: "UG" },
-                    { name: "Tanzania", code: "TZ" },
-                    { name: "USA", code: "US" },
-                    { name: "UK", code: "GB" },
-                    { name: "Canada", code: "CA" },
+                    { name: "Ghana", code: "gh" },
+                    { name: "Nigeria", code: "ng" },
+                    { name: "Kenya", code: "ke" },
+                    { name: "South Africa", code: "za" },
+                    { name: "Uganda", code: "ug" },
+                    { name: "Tanzania", code: "tz" },
+                    { name: "USA", code: "us" },
+                    { name: "UK", code: "gb" },
+                    { name: "Canada", code: "ca" }
                   ].map((country, i) => (
-                    <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-white dark:bg-zinc-800 shadow-sm border border-zinc-100 dark:border-zinc-700">
-                      <div className="h-6 w-8 rounded overflow-hidden relative bg-zinc-100">
-                        <img 
-                          src={`https://flagcdn.com/w40/${country.code.toLowerCase()}.png`}
+                    <div
+                      key={i}
+                      className="flex items-center gap-3 rounded-2xl border border-white/60 bg-white/90 px-4 py-3 text-left shadow-[0_8px_25px_rgba(15,23,42,0.08)] backdrop-blur dark:border-zinc-800/80 dark:bg-zinc-900/70"
+                    >
+                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-zinc-100 to-white dark:from-zinc-800 dark:to-zinc-900 shadow-inner">
+                        <img
+                          src={`https://flagcdn.com/w40/${country.code}.png`}
                           alt={country.name}
-                          className="w-full h-full object-cover"
+                          className="h-5 w-8 rounded-sm object-cover"
+                          loading="lazy"
                         />
-                      </div>
-                      <span className="font-medium text-sm text-zinc-700 dark:text-zinc-200">{country.name}</span>
+                      </span>
+                      <span className="font-semibold text-zinc-800 dark:text-zinc-100">{country.name}</span>
                     </div>
                   ))}
                 </div>
-                <div className="mt-6">
-                  <Link href="/airtime" className="text-brand-600 font-semibold hover:text-brand-700 inline-flex items-center">
-                    View all supported countries <ArrowRight className="ml-1 h-4 w-4" />
-                  </Link>
-                </div>
+
+                <Link
+                  href="/airtime"
+                  className="mt-10 inline-flex items-center gap-2 text-base font-semibold text-brand-600 hover:text-brand-700 transition-colors"
+                >
+                  View all supported countries
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
               </motion.div>
-              
+
               <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
+                initial={{ opacity: 0, x: 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.5 }}
                 className="relative"
               >
-                 <div className="absolute inset-0 bg-gradient-to-tr from-brand-500/20 to-indigoBrand-500/20 blur-3xl rounded-full" />
-                 <div className="relative bg-white dark:bg-zinc-900 rounded-3xl p-6 sm:p-8 shadow-2xl border border-zinc-200 dark:border-zinc-800">
-                   <div className="flex items-center justify-between mb-8">
-                     <div>
-                       <h3 className="text-xl font-bold">Recent Transfers</h3>
-                       <p className="text-sm text-zinc-500">Live activity across our network</p>
-                     </div>
-                     <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                   </div>
-                   
-                   <div className="space-y-4">
-                     {[
-                       { from: "United Kingdom", to: "Ghana", amount: "GHS 150.00", type: "Airtime", time: "Just now" },
-                       { from: "United States", to: "Nigeria", amount: "NGN 5,000", type: "Data Bundle", time: "2 mins ago" },
-                       { from: "Canada", to: "Kenya", amount: "KES 1,000", type: "Airtime", time: "5 mins ago" },
-                       { from: "Germany", to: "South Africa", amount: "ZAR 200", type: "Data Bundle", time: "12 mins ago" }
-                     ].map((tx, i) => (
-                       <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/50">
-                         <div className="flex items-center gap-3">
-                           <div className="h-8 w-8 rounded-full bg-brand-100 dark:bg-brand-900/30 flex items-center justify-center text-brand-600">
-                             {tx.type === "Airtime" ? <Phone className="h-4 w-4" /> : <Wifi className="h-4 w-4" />}
-                           </div>
-                           <div>
-                             <div className="text-sm font-semibold">{tx.to}</div>
-                             <div className="text-xs text-zinc-500">From {tx.from}</div>
-                           </div>
-                         </div>
-                         <div className="text-right">
-                           <div className="text-sm font-bold">{tx.amount}</div>
-                           <div className="text-xs text-zinc-400">{tx.time}</div>
-                         </div>
-                       </div>
-                     ))}
-                   </div>
-                 </div>
+                <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-brand-500/20 via-purple-500/20 to-indigoBrand-500/20 blur-3xl" />
+                <div className="relative rounded-[2.5rem] border border-white/40 bg-white/95 p-8 shadow-[0_45px_120px_rgba(15,23,42,0.15)] dark:border-zinc-800 dark:bg-zinc-950/90">
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <p className="text-sm text-zinc-500">Live activity across our network</p>
+                      <h3 className="text-2xl font-bold text-zinc-900 dark:text-white">Recent Transfers</h3>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm font-semibold text-emerald-500">
+                      <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                      Live
+                    </div>
+                  </div>
+
+                  <div className="mt-8 space-y-4">
+                    {[
+                      { country: "Ghana", from: "United Kingdom", amount: "GHS 150.00", time: "Just now", icon: Phone, accent: "from-pink-500/10 to-pink-500/20", iconColor: "text-pink-600" },
+                      { country: "Nigeria", from: "United States", amount: "NGN 5,000", time: "2 mins ago", icon: Wifi, accent: "from-rose-500/10 to-rose-500/20", iconColor: "text-rose-600" },
+                      { country: "Kenya", from: "Canada", amount: "KES 1,000", time: "5 mins ago", icon: Phone, accent: "from-indigo-500/10 to-indigo-500/20", iconColor: "text-indigo-600" },
+                      { country: "South Africa", from: "Germany", amount: "ZAR 200", time: "12 mins ago", icon: Wifi, accent: "from-purple-500/10 to-purple-500/20", iconColor: "text-purple-600" }
+                    ].map((item, i) => (
+                      <div
+                        key={i}
+                        className="flex items-center justify-between rounded-2xl border border-zinc-100/80 bg-white/90 p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg dark:border-zinc-800/70 dark:bg-zinc-900/70"
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className={`h-11 w-11 rounded-2xl bg-gradient-to-br ${item.accent} flex items-center justify-center ${item.iconColor}`}>
+                            <item.icon className="h-5 w-5" />
+                          </div>
+                          <div>
+                            <p className="font-semibold text-zinc-900 dark:text-white">{item.country}</p>
+                            <p className="text-xs text-zinc-500">From {item.from}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-zinc-900 dark:text-white">{item.amount}</p>
+                          <p className="text-xs text-zinc-500">{item.time}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-8 flex items-center justify-between text-sm text-zinc-500">
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="h-4 w-4 text-brand-500" />
+                      Transparent FX rates, zero hidden fees
+                    </div>
+                    <Link href="/app" className="font-semibold text-brand-600 hover:text-brand-700">
+                      Live dashboard →
+                    </Link>
+                  </div>
+
+                  <button
+                    type="button"
+                    aria-label="Open assistant"
+                    className="absolute -bottom-6 -right-6 h-16 w-16 rounded-full bg-gradient-to-br from-brand-500 via-rose-500 to-indigoBrand-500 shadow-2xl shadow-brand-500/40 text-white flex items-center justify-center hover:scale-105 transition"
+                  >
+                    <Sparkles className="h-6 w-6" />
+                  </button>
+                </div>
               </motion.div>
             </div>
           </div>
         </section>
 
         {/* CTA Section */}
-        <section className="relative py-12 sm:py-16 md:py-20 lg:py-24">
-          <div className="mx-auto max-w-7xl px-3 sm:px-4 text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-tight text-zinc-900 dark:text-zinc-50 px-2">
-                Ready to Get Started?
-              </h2>
-              <p className="mt-3 sm:mt-4 text-base sm:text-lg md:text-xl text-zinc-600 dark:text-zinc-300 px-4">
-                Join thousands of users sending airtime and data globally with LidaPay
-              </p>
-              <div className="mt-6 sm:mt-8 flex flex-col gap-3 sm:gap-4 sm:flex-row sm:justify-center">
-                <Link href="/register" className="w-full sm:w-auto">
-                  <Button size="lg" className="w-full sm:w-auto h-11 sm:h-12 md:h-14 px-6 sm:px-8 text-sm sm:text-base">
-                    Create Free Account
-                    <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
-                  </Button>
-                </Link>
-                <Link 
-                  href="https://play.google.com/store/apps/details?id=com.advansistechnologies.lidapay&pcampaignid=web_share" 
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full sm:w-auto inline-block"
-                >
-                  <img 
-                    alt="Get it on Google Play" 
-                    src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
-                    className="h-12 sm:h-14 md:h-16 w-auto mx-auto sm:mx-0"
-                  />
-                </Link>
+        <section className="py-24 relative overflow-hidden">
+          <div className="mx-auto max-w-5xl px-4 sm:px-6">
+            <div className="relative rounded-[3rem] bg-zinc-900 dark:bg-zinc-50 overflow-hidden px-6 py-16 sm:px-16 sm:py-24 text-center">
+              <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20" />
+              <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
+                <div className="absolute -top-[50%] -left-[20%] w-[80%] h-[80%] rounded-full bg-brand-500/30 blur-[100px]" />
+                <div className="absolute -bottom-[50%] -right-[20%] w-[80%] h-[80%] rounded-full bg-indigoBrand-500/30 blur-[100px]" />
               </div>
-            </motion.div>
+              
+              <div className="relative z-10">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white dark:text-zinc-900 mb-6">
+                  Ready to get started?
+                </h2>
+                <p className="text-lg text-zinc-300 dark:text-zinc-600 max-w-2xl mx-auto mb-10">
+                  Join thousands of users who trust LidaPay for their international airtime and data needs. Create your free account today.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                  <Link href="/register">
+                    <Button size="lg" className="h-14 px-8 text-base bg-white text-zinc-900 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800 border-none">
+                      Create Free Account
+                    </Button>
+                  </Link>
+                  <Link 
+                    href="https://play.google.com/store/apps/details?id=com.advansistechnologies.lidapay&pcampaignid=web_share" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <img 
+                      alt="Get it on Google Play" 
+                      src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
+                      className="h-14 sm:h-16 w-auto hover:opacity-90 transition-opacity"
+                    />
+                  </Link>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-zinc-200/60 bg-zinc-50/50 py-8 sm:py-12 dark:border-zinc-900 dark:bg-zinc-950">
-        <div className="mx-auto max-w-7xl px-3 sm:px-4">
-          <div className="grid grid-cols-1 gap-6 sm:gap-8 sm:grid-cols-2 md:grid-cols-4">
-            <div className="col-span-1 sm:col-span-2 md:col-span-2">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-xl bg-gradient-to-br from-brand-500 to-indigoBrand-600 shadow-lg shadow-brand-500/25 flex-shrink-0" />
-                <div>
-                  <div className="text-xs sm:text-sm font-black tracking-tight text-zinc-900 dark:text-zinc-50">LidaPay</div>
-                  <div className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400">Global • Trusted • Fast</div>
-                </div>
-              </div>
-              <p className="mt-3 sm:mt-4 text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 max-w-md">
-                Your trusted partner for global airtime and data top-ups. Fast, secure, and reliable.
-              </p>
-              <div className="mt-3 sm:mt-4 flex gap-4">
-                <Link 
-                  href="https://play.google.com/store/apps/details?id=com.advansistechnologies.lidapay&pcampaignid=web_share" 
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block"
-                >
-                  <img 
-                    alt="Get it on Google Play" 
-                    src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
-                    className="h-8 sm:h-10 w-auto"
-                  />
-                </Link>
-              </div>
-            </div>
-            <div>
-              <h4 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-50">Product</h4>
-              <ul className="mt-3 sm:mt-4 space-y-1.5 sm:space-y-2">
-                <li><Link href="/app" className="text-xs sm:text-sm text-zinc-600 hover:text-brand-600 dark:text-zinc-400 dark:hover:text-brand-400">Dashboard</Link></li>
-                <li><Link href="/airtime" className="text-xs sm:text-sm text-zinc-600 hover:text-brand-600 dark:text-zinc-400 dark:hover:text-brand-400">Airtime</Link></li>
-                <li><Link href="/data" className="text-xs sm:text-sm text-zinc-600 hover:text-brand-600 dark:text-zinc-400 dark:hover:text-brand-400">Data Bundles</Link></li>
-                <li><Link href="/rewards" className="text-xs sm:text-sm text-zinc-600 hover:text-brand-600 dark:text-zinc-400 dark:hover:text-brand-400">Rewards</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-50">Company</h4>
-              <ul className="mt-3 sm:mt-4 space-y-1.5 sm:space-y-2">
-                <li><Link href="#" className="text-xs sm:text-sm text-zinc-600 hover:text-brand-600 dark:text-zinc-400 dark:hover:text-brand-400">About</Link></li>
-                <li><Link href="#" className="text-xs sm:text-sm text-zinc-600 hover:text-brand-600 dark:text-zinc-400 dark:hover:text-brand-400">Contact</Link></li>
-                <li><Link href="/privacy" className="text-xs sm:text-sm text-zinc-600 hover:text-brand-600 dark:text-zinc-400 dark:hover:text-brand-400">Privacy</Link></li>
-                <li><Link href="/terms" className="text-xs sm:text-sm text-zinc-600 hover:text-brand-600 dark:text-zinc-400 dark:hover:text-brand-400">Terms</Link></li>
-              </ul>
-            </div>
-          </div>
-          <div className="mt-8 sm:mt-12 border-t border-zinc-200/60 pt-6 sm:pt-8 text-center">
-            <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400">
-              © {new Date().getFullYear()} LidaPay. All rights reserved.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
 
       {/* AI Chat Widget */}
       <AIChatWidget />
     </div>
   );
 }
-
-
