@@ -178,7 +178,7 @@ export function AIChatWidget() {
           <div className="flex items-center gap-1">
             <Button
               variant="ghost"
-              size="icon"
+              size="sm"
               onClick={() => setIsMinimized(!isMinimized)}
               className="h-8 w-8 text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full"
             >
@@ -186,7 +186,7 @@ export function AIChatWidget() {
             </Button>
             <Button
               variant="ghost"
-              size="icon"
+              size="sm"
               onClick={() => setIsOpen(false)}
               className="h-8 w-8 text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full"
             >
@@ -306,7 +306,7 @@ export function AIChatWidget() {
                 <Button
                   onClick={sendMessage}
                   disabled={!input.trim() || isTyping}
-                  size="icon"
+                  size="sm"
                   className="absolute right-1.5 h-8 w-8 rounded-full bg-zinc-900 dark:bg-zinc-50 text-white dark:text-zinc-900 hover:bg-brand-600 dark:hover:bg-zinc-200 transition-colors"
                 >
                   <Send className="h-3.5 w-3.5" />

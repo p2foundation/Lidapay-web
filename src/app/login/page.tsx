@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { login, extractErrorMessage } from "@/lib/api";
 import { getAccessToken } from "@/lib/storage";
 import { toast } from "sonner";
+import { ArrowLeft } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -15,7 +16,20 @@ export default function LoginPage() {
   const [busy, setBusy] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-brand-50 via-white to-white dark:from-zinc-950 dark:via-zinc-950 dark:to-zinc-950">
+    <div className="relative min-h-screen bg-gradient-to-b from-brand-50 via-white to-white dark:from-zinc-950 dark:via-zinc-950 dark:to-zinc-950">
+      <div className="absolute left-4 top-6 z-10">
+        <Button
+          variant="ghost"
+          size="sm"
+          disabled={busy}
+          onClick={() => router.push("/")}
+          className="rounded-full gap-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Home
+        </Button>
+      </div>
+
       <div className="mx-auto flex max-w-lg flex-col gap-6 px-4 py-16">
         <div className="text-center">
           <div className="mx-auto mb-4 h-12 w-12 rounded-2xl bg-gradient-to-br from-brand-500 to-indigoBrand-600 shadow-glow" />

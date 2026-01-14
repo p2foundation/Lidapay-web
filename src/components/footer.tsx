@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export function Footer() {
   return (
-    <footer className="fixed bottom-0 left-0 right-0 z-10 border-t border-zinc-200/60 dark:border-zinc-800/60 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-sm shadow-sm">
+    <footer className="border-t border-zinc-200/60 dark:border-zinc-800/60 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-sm shadow-sm">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 py-4 sm:py-5">
         <div className="flex flex-col gap-4 sm:gap-0 sm:flex-row items-center justify-between">
           {/* Left Section - Logo & Copyright */}
