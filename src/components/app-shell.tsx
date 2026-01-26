@@ -106,6 +106,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           return;
         }
         
+        // Only fetch profile if we have a token
+        const hasToken = getAccessToken();
+        if (!hasToken) {
+          // No token, skip profile fetch to avoid 401 errors on public pages
+          return;
+        }
+        
         getProfile()
           .then((raw: any) => {
             const user = raw?.user ?? raw?.data?.user ?? raw;

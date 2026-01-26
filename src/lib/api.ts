@@ -236,9 +236,13 @@ async function request<T>(path: string, init?: RequestInit, opts?: { auth?: bool
           console.error('API Error:', errorInfo);
         }
       } else if (res.status === 401) {
-         // Log 401 errors specifically to help debug "Token not found"
-         console.warn(`[API] 401 Unauthorized for ${path}. Auth enabled: ${opts?.auth !== false}, Has Token: ${hasAuthToken}`);
-         console.trace("401 Unauthorized Request Trace");
+         // Only log 401 errors if we have a token (unexpected) or if auth is explicitly required
+         // Suppress expected 401s on public pages when no token is present
+         if (hasAuthToken || opts?.auth === true) {
+           console.warn(`[API] 401 Unauthorized for ${path}. Auth enabled: ${opts?.auth !== false}, Has Token: ${hasAuthToken}`);
+           console.trace("401 Unauthorized Request Trace");
+         }
+         // Otherwise, this is an expected 401 on a public page - silently handle it
       }
       
       throw new ApiError(res.status, errorMessage, data, path);

@@ -55,7 +55,7 @@ export default function LandingPage() {
     { value: "150+", label: "Countries", icon: Globe2 },
     { value: "Instant", label: "Settlement", icon: Zap },
     { value: "Secure", label: "Checkout", icon: Shield },
-    { value: "Real‑time", label: "Tracking", icon: ShieldCheck }
+    { value: "Real-time", label: "Tracking", icon: ShieldCheck }
   ];
 
   return (
@@ -281,7 +281,7 @@ export default function LandingPage() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.8, duration: 0.8 }}
-                  className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 pb-10"
+                  className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 md:gap-4 pb-10"
                 >
                   {stats.map((stat, i) => (
                     <motion.div
@@ -289,15 +289,15 @@ export default function LandingPage() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.9 + i * 0.1 }}
-                      className="p-4 rounded-2xl bg-zinc-950/35 backdrop-blur-xl border border-white/15 shadow-lg shadow-black/20"
+                      className="p-3.5 sm:p-4 md:p-5 rounded-2xl bg-zinc-950/35 backdrop-blur-xl border border-white/15 shadow-lg shadow-black/20 hover:bg-zinc-950/45 transition-colors"
                     >
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 border border-white/10">
-                          <stat.icon className="h-5 w-5 text-brand-300" />
+                      <div className="flex flex-col items-center text-center gap-2 sm:gap-2.5">
+                        <div className="flex h-9 w-9 sm:h-11 sm:w-11 md:h-12 md:w-12 items-center justify-center rounded-xl bg-white/10 border border-white/10 flex-shrink-0">
+                          <stat.icon className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-brand-300" />
                         </div>
-                        <div className="min-w-0">
-                          <div className="text-xl sm:text-2xl font-black text-white leading-none tracking-tight">{stat.value}</div>
-                          <div className="text-xs text-white/70 font-semibold leading-tight">{stat.label}</div>
+                        <div className="w-full">
+                          <div className="text-xs sm:text-sm md:text-base lg:text-lg font-black text-white leading-tight tracking-tight mb-1">{stat.value}</div>
+                          <div className="text-[9px] sm:text-[10px] md:text-xs text-white/70 font-semibold leading-tight">{stat.label}</div>
                         </div>
                       </div>
                     </motion.div>
